@@ -4,7 +4,6 @@ import time
 
 def test_sauce_demo_logins():
     with sync_playwright() as p:
-        # Lancer le navigateur
         browser = p.chromium.launch(headless=False)
         context = browser.new_context(viewport=None)
         page = context.new_page()
@@ -12,8 +11,6 @@ def test_sauce_demo_logins():
         # Ouvrir le site
         page.goto("https://www.saucedemo.com/v1/")
         time.sleep(2)
-
-        # Liste des utilisateurs et leurs résultats attendus
         users = [
             {"username": "standard_user", "expected_url": "inventory.html",
              "message": "Connexion réussie pour standard_user"},
@@ -25,11 +22,8 @@ def test_sauce_demo_logins():
              "message": "Connexion réussie pour performance_glitch_user"},
         ]
 
-        # Itérer sur chaque utilisateur
         for user in users:
             print(f"Test de l'utilisateur : {user['username']}")
-
-            # Remplir les champs de connexion
             page.fill('input[placeholder="Username"]', user['username'])
             page.fill('input[placeholder="Password"]', 'secret_sauce')
             page.click('input[type="submit"]')
@@ -37,21 +31,19 @@ def test_sauce_demo_logins():
 
             # Vérification des résultats
             if "expected_url" in user:
-                # Vérifier si l'URL contient le chemin attendu
                 if user["expected_url"] in page.url:
-                    print(f"✅ {user['message']}")
+                    print(f" {user['message']}")
                 else:
-                    print(f"❌ Erreur : L'utilisateur {user['username']} n'a pas atteint l'URL attendue.")
+                    print(f" Erreur : L'utilisateur {user['username']} n'a pas atteint l'URL attendue.")
 
             if "expected_error" in user:
                 # Vérifier si le message d'erreur s'affiche
                 error_message = page.text_content('//*[@id="login_button_container"]/div/form/h3')
                 if user["expected_error"] in error_message:
-                    print(f"✅ {user['message']}")
+                    print(f" {user['message']}")
                 else:
-                    print(f"❌ Erreur : Le message attendu pour {user['username']} n'a pas été trouvé.")
+                    print(f"Erreur : Le message attendu pour {user['username']} n'a pas été trouvé.")
 
-            # Recharger la page pour la prochaine tentative
             page.goto("https://www.saucedemo.com/v1/")
             time.sleep(2)
 
